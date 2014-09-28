@@ -38,6 +38,9 @@ Ext.define('OnlineJudges.controller.Admin', {
             'Judges',
             'student.Judges',
             'Invitations',
+            'InvitationEmails',
+            // NEW declare store
+            'AddJudgesList',
             'Livestats',
             'LivestatsGraph',
             'Terms',
@@ -69,6 +72,7 @@ Ext.define('OnlineJudges.controller.Admin', {
                 xtype: 'emailTemplate',
                 selector: 'emailTemplate'
             },
+            AddJudgeBtn: 'adminMain #AddJudgeBtn',
             GradeSaveBtn: 'adminMain #GradeSaveBtn',
             LivestatsBtn: 'adminMain #LivestatsBtn',
             rolesBtn: 'adminMain #rolesBtnAdmin',
@@ -96,6 +100,9 @@ Ext.define('OnlineJudges.controller.Admin', {
             },
             "adminMain adminHome": {
                 show: 'onHomeTabShow'
+            },
+            "adminMain #AddJudgeBtn": {
+                tap: 'onAddJudgeTap'
             },
             "adminMain tabpanel tabpanel": {
                 show: 'onPeopleTabShow',
@@ -288,7 +295,7 @@ Ext.define('OnlineJudges.controller.Admin', {
         declinedPjo.check();
     },
     onPastJOptionsOKTap: function(){
-        var pjo = this.getPastJudgesOptions();
+        var pjo = this.getPastJudgesgetaddJudgeBtnOptions();
         var main = this.getMain();
         var pendingtPjo = pjo.down('checkboxfield[name=pendingJudges]');
         var acceptedPjo = pjo.down('checkboxfield[name=acceptedJudges]');
@@ -357,7 +364,7 @@ Ext.define('OnlineJudges.controller.Admin', {
         var pastAccepted = pastJO.down('checkboxfield[name=acceptedJudges]');
         var pastDeclined = pastJO.down('checkboxfield[name=declinedJudges]');
 
-	if(activeJudges === null) return;
+    if(activeJudges === null) return;
         str.clearFilter();
         str.load();
         //str.each(function (item) {
@@ -550,7 +557,7 @@ Ext.define('OnlineJudges.controller.Admin', {
             pastStudents = main.down('email checkboxfield[name=pastStudents]');
         var termsList = this.getTerms().down('list[name=terms]');
         var terms = termsList.getSelection().map(function (rec) { return rec.get('id') });
-	if(currentStudents === null) return;
+    if(currentStudents === null) return;
         //str.load();
         str.clearFilter();
         str.load();
@@ -886,6 +893,7 @@ Ext.define('OnlineJudges.controller.Admin', {
             xtype: 'adminStudentGrade',
             title: name + "'" + (name.indexOf('s', name.length - 1) !== -1 ? '' : 's') + ' Grade'
         }).setRecord(record).student = dataView.student;
+        console.log(main);
     },
 
     onResetAppBtnTap: function () {
@@ -958,6 +966,7 @@ Ext.define('OnlineJudges.controller.Admin', {
         });
     },
 
+    //Hiding GradeSaveBtn
     onPeopleTabChange: function (container, value) {
         var store = value.getStore(),
             navBtn = this.getNavBtn(),
@@ -974,6 +983,10 @@ Ext.define('OnlineJudges.controller.Admin', {
             navBtn.setText("Load");
             navBtn.setIconCls('');
             navBtn.show();
+
+            AddJudgeBtn = this.getAddJudgeBtn();
+            AddJudgeBtn.hide();
+
             GradeSaveBtn = this.getGradeSaveBtn();
             GradeSaveBtn.hide();
 
@@ -983,21 +996,40 @@ Ext.define('OnlineJudges.controller.Admin', {
             navBtn.setText('');
             navBtn.setIconCls('add');
             navBtn.show();
+
+            AddJudgeBtn = this.getAddJudgeBtn();
+            AddJudgeBtn.hide();
+
             GradeSaveBtn = this.getGradeSaveBtn();
             GradeSaveBtn.hide();
         }
+        //invitations tab
         else if (title === 'Invitations') {
-            navBtn.hide();
+            // NEW: Adding Button Send  
+            navBtn.from = "InvitationsTab";
+            navBtn.setIconCls('');
+            navBtn.setText("Send");
+            navBtn.show();
+
+            AddJudgeBtn = this.getAddJudgeBtn();
+            AddJudgeBtn.show();
+
             GradeSaveBtn = this.getGradeSaveBtn();
             GradeSaveBtn.hide();
         }
-        else if (title === 'Grades'){
+
+        else if (title === 'Grades'){            
             navBtn.from = "pendingGradesTab";
             navBtn.setText('');
             navBtn.setIconCls('');
             navBtn.hide();
+
+            AddJudgeBtn = this.getAddJudgeBtn();
+            AddJudgeBtn.hide();
+
             GradeSaveBtn = this.getGradeSaveBtn();
             GradeSaveBtn.show();
+
             store = Ext.getStore('PendingGrades');
             store.load();
 
@@ -1088,10 +1120,14 @@ Ext.define('OnlineJudges.controller.Admin', {
             }
         }
 
+        //send invitation
         else if (button.from === 'judgesTab') {
+                //NEW: Adding Judge Add Button
+                AddJudgeBtn.from = "addJudgebtn";
+                AddJudgeBtn = this.getAddJudgeBtn();
+                AddJudgeBtn.show();
 
             Ext.php.Settings.load(function (settings) {
-
                 if (Ext.isEmpty(settings.Date) ||
                     Ext.isEmpty(settings.Time) ||
                     Ext.isEmpty(settings.EmailText) ||
@@ -1109,10 +1145,30 @@ Ext.define('OnlineJudges.controller.Admin', {
                     xtype: 'adminSendInvitation',
                     title: 'Send Invitation'
                 });
+
+                console.log("herro")
+
                 button.setText("Send");
                 button.setIconCls('');
                 button.from = 'sendInvitation';
             });
+        }
+
+        //implementing sending function on invitations tab
+        else if (button.from === 'InvitationsTab') {
+            //tap: function() {
+                var store = Ext.getStore('InvitationEmails');
+                console.log("store");
+                console.log(store);
+
+                store.each(function(item, index, length){
+                    console.log("InvitationsTabs");
+                    console.log(item);
+                    Ext.php.Invites.send(item);
+                });
+                Ext.Msg.alert('Save', 'Successful Save');
+            //}
+           // Ext.Msg.alert('send invitations', 'not sending anything');
         }
 
         else if (button.from === 'studentsTab') {
@@ -1124,7 +1180,7 @@ Ext.define('OnlineJudges.controller.Admin', {
                 }
             });
         }
-
+        //send Invitation
         else if (button.from === 'sendInvitation') {
             var rec1 = mainView.getActiveItem().getValues();
             if (!Ext.isEmpty(rec1.email)) {
@@ -1132,7 +1188,10 @@ Ext.define('OnlineJudges.controller.Admin', {
                 Ext.php.Invites.send(rec1, function (result) {
                     var msg = result.success ? "Invitation successfully sent" : "Failed to send invitation",
                         store = Ext.getStore('Invitations');
+                        // retrieve all objects to send
 
+                        console.log(store);
+                    
                     if (result.success && store.isLoaded()) store.load();
 
                     Ext.Msg.alert("Invitation Email", msg);
@@ -1235,7 +1294,7 @@ Ext.define('OnlineJudges.controller.Admin', {
                             if (result === true) sentEmail++;
                             else errorEmails++;
                         });
-			sentEmail++;
+            sentEmail++;
                     Ext.php.Email.sendEmail('jjord006@fiu.edu', subject, bodyReady, from, Ext.emptyFN);
                     
 
@@ -1323,7 +1382,40 @@ Ext.define('OnlineJudges.controller.Admin', {
         }
     },
 
+
+    //NEW: on tap Judge add button
+    onAddJudgeTap: function(){
+
+        var store = Ext.getStore("AddJudgesList");
+
+        // var util = this.getMain().getView('widget.adminSendInvitation');
+        // console.log("VIEW: " + util);
+
+        var now = new Date(),
+             value = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        var store = Ext.getStore('AddJudgesList');
+        console.log("SIZE:" + store.getCount());
+        store.add({txt: value});
+        //store.add("Hello");
+        console.log("VALUE " + JSON.stringify(store.getAt(store.getCount()-1).getData()));
+
+        // console.log(info)
+        // console.log("shit")
+        // info.load();
+        // console.log(info)
+
+        //  mainView = this.getMain(),
+        // console.log("cracccaaaa")
+        // mainView.push(Ext.create('widget.adminSendInvitation', {
+        //       xtype: 'adminSendInvitation'
+        // })).setRecord('invitations');
+
+    },
+
     onPeopleTabHide: function(tabpanel){
+            AddJudgeBtn = this.getaddJudgeBtn();
+            AddJudgeBtn.hide();
+            
             GradeSaveBtn = this.getGradeSaveBtn();
             GradeSaveBtn.hide();
 
@@ -1546,7 +1638,7 @@ Ext.define('OnlineJudges.controller.Admin', {
         var store = Ext.getStore('Livestats');
         var method = Ext.direct.Manager.parseMethod('Ext.php.Livestats.getAll');
         store.getProxy().setDirectFn(method);
-	store.setSorters('id');
+    store.setSorters('id');
 
         navBar.setTitle("Stats");
         navBar.backButtonStack[navBar.backButtonStack.length-1] = "Livestats";
