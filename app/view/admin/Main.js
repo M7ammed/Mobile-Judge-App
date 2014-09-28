@@ -42,6 +42,12 @@ Ext.define('OnlineJudges.view.admin.Main', {
                 {
                     align: 'right',
                     hidden: true,
+                    iconCls: 'add',
+                    itemId: 'AddJudgeBtn'
+                },
+                {
+                    align: 'right',
+                    hidden: true,
                     text: 'Students',
                     itemId: 'LivestatsBtn'
                 },
@@ -74,9 +80,11 @@ Ext.define('OnlineJudges.view.admin.Main', {
                     animation: null
                 },
                 items: [
+                    // HOME PAGE
                     {
                         xtype: 'adminHome'
                     },
+                    // PEOPLE PAGE
                     {
                         xtype: 'tabpanel',
                         layout: {
@@ -105,15 +113,16 @@ Ext.define('OnlineJudges.view.admin.Main', {
                     //{
                     //    xtype: 'questions'
                     //},
-
+                    // EMAIL PAGE
                     {
                         xtype: 'email'
                     },
-
+                    // STATS PAGE
                     {
                         title: 'Stats',
                         xtype: 'livestats'
                     },
+                    // SETTINGS
                     {
                         xtype: 'settings'
                     }
