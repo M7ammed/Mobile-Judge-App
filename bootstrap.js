@@ -751,7 +751,11 @@ Ext.ClassManager.addNameAlternateMappings({
   "OnlineJudges.profile.Tablet": [],
   "OnlineJudges.store.GradeList": [],
   "OnlineJudges.store.Invitations": [],
+  // NEW store for InvitationEmails
+  "OnlineJudges.store.InvitationEmails": [],
   "OnlineJudges.store.Judges": [],
+  // NEW store for temporary new Judges
+  "OnlineJudges.store.AddJudgesList": [],
   "OnlineJudges.store.JudgesContacts": [],
   "OnlineJudges.store.Livestats": [],
   "OnlineJudges.store.LivestatsGraph": [],
