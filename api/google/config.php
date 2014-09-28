@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+
 function getLoginCallBackUrl() {
     $pageURL = 'http';
     //if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
@@ -40,6 +41,7 @@ $apiConfig = array(
     'hostedDomain' => 'fiu.edu',
 
     // OAuth2 Settings, you can get these keys at https://code.google.com/apis/console
+    
     'oauth2_client_id' => '234324319876-qhga0q9hfmau1g7ud9v7meivea0tdve8.apps.googleusercontent.com',
     'oauth2_client_secret' => 'csKBNyY05ABcxj2rCjeu4wlj',
     'oauth2_redirect_uri' => getLoginCallBackUrl(),
