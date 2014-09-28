@@ -21,7 +21,10 @@ class Invites {
     }
 
     public function send($rec) {
-        $db = new Database();
+        error_log($rec);
+
+
+        /*$db = new Database();
 
         $db->select('JudgeInvitations','id',null,"Email = '".$rec->email."'", 'Sent DESC', '1');
 
@@ -46,7 +49,7 @@ class Invites {
             $invite = null;
         }
 
-        return array('success'=>$sent, 'data'=>$invite);
+        return array('success'=>$sent, 'data'=>$invite);*/
     }
 
     public static function getRSVPUrl() {
