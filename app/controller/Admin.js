@@ -1154,22 +1154,22 @@ Ext.define('OnlineJudges.controller.Admin', {
             });
         }
 
-        //implementing sending function on invitations tab
+        //NEW: implementing sending function on invitations tab
         else if (button.from === 'InvitationsTab') {
-            //tap: function() {
                 var store = Ext.getStore('InvitationEmails');
-                console.log("store");
-                console.log(store);
-
-                store.each(function(item, index, length){
-                    console.log("InvitationsTabs");
-                    console.log(item);
-                    Ext.php.Invites.send(item);
-                });
-                Ext.Msg.alert('Save', 'Successful Save');
-            //}
-           // Ext.Msg.alert('send invitations', 'not sending anything');
+                for (var i in store) {
+                    if(i.match('@') && store[i] != null) {
+                        //console.log(i)
+                        Ext.php.Invites.send(store[i]);
+                    }
+                }
+       
+                store.each('InvitationEmails', function(item, index, length) {
+                    console.log(item)
+                })
+                Ext.Msg.alert('Success', 'Sent Invitatons successfully');
         }
+
 
         else if (button.from === 'studentsTab') {
             Ext.Msg.confirm('Load Students', 'Do you want to import students from the Sr Project Website?', function (btn) {
@@ -1391,10 +1391,14 @@ Ext.define('OnlineJudges.controller.Admin', {
         // var util = this.getMain().getView('widget.adminSendInvitation');
         // console.log("VIEW: " + util);
 
+        //Create Date Object
         var now = new Date(),
+        // Get Local Time
              value = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        // Get the data store 'AddJudgesList'
         var store = Ext.getStore('AddJudgesList');
         console.log("SIZE:" + store.getCount());
+        // Add the Local Time value into the data store
         store.add({txt: value});
         //store.add("Hello");
         console.log("VALUE " + JSON.stringify(store.getAt(store.getCount()-1).getData()));
