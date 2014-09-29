@@ -21,12 +21,10 @@ class Invites {
     }
 
     public function send($rec) {
-        error_log($rec);
+        
+        $db = new Database();
 
-
-        /*$db = new Database();
-
-        $db->select('JudgeInvitations','id',null,"Email = '".$rec->email."'", 'Sent DESC', '1');
+        $db->select('JudgeInvitations','id',null,"Email = '".$rec->Email."'", 'Sent DESC', '1');
 
         $invite = $db->getResult();
 
@@ -35,13 +33,13 @@ class Invites {
         $id = $isNew ? trim($db->getGUID(),"{}") : $invite['id'];
 
         if (!$isNew) $db->delete('JudgeInvitations', "id='".$id."'");
-        $db->insert('JudgeInvitations', array('id'=>$id, 'Email'=>$rec->email, 'FirstName'=>$rec->firstName, 'LastName'=>$rec->lastName ));
+        $db->insert('JudgeInvitations', array('id'=>$id, 'Email'=>$rec->Email, 'FirstName'=>$rec->FirstName, 'LastName'=>$rec->LastName ));
 
         $db->select('JudgeInvitations','JudgeInvitations.*,Settings.Subject','Settings ON 1=1',"id = '".$id."'");
         $invite = null;
         $invite = $db->getResult();
 
-        $sent = mail($rec->email,$invite['Subject'], self::getEmailBody($id), "From: Masoud Sadjadi <sadjadi@cs.fiu.edu>\r\nMIME-Version: 1.0\r\nContent-type: text/html; charset=iso-8859-1\r\n");
+        $sent = mail($rec->Email,$invite['Subject'], self::getEmailBody($id), "From: Masoud Sadjadi <sadjadi@cs.fiu.edu>\r\nMIME-Version: 1.0\r\nContent-type: text/html; charset=iso-8859-1\r\n");
 
         if ($isNew && !$sent)
         {
@@ -49,7 +47,7 @@ class Invites {
             $invite = null;
         }
 
-        return array('success'=>$sent, 'data'=>$invite);*/
+        return array('success'=>$sent, 'data'=>$invite);
     }
 
     public static function getRSVPUrl() {
