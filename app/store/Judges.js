@@ -21,7 +21,7 @@ Ext.define('OnlineJudges.store.Judges', {
             {
                 name: 'id',
                 type: 'int'
-            }, 'Email', 'FirstName', 'LastName', 'Title', 'Affiliation'
+            }, 'Email', 'FirstName', 'LastName', 'Title', 'Affiliation', 'termInitiated'
         ],
         sorters: ['FirstName','LastName'],
         grouper: function(record) {

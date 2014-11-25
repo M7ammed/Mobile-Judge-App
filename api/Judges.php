@@ -8,8 +8,8 @@ class Judges {
     public function getAll() {
         $db = new Database();
         $db->select('Users','Judges.id,Users.Email,Users.FirstName,Users.LastName,Judges.Title,Judges.Affiliation',
-                    'Judges ON Users.JudgeId = id',
-                    null,
+                    'Judges ON Users.JudgeId = id join term as t on t.termInitiated = Users.termInitiated',
+					"t.ShowTerm = 'yes'",
                     'Users.FirstName, Users.LastName');
         $res = $db->getResult();
         if (array_key_exists('id', $res)) $res=array($res);

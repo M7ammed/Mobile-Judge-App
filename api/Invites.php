@@ -6,11 +6,29 @@ class Invites {
 
     public function getAll() {
         $db = new Database();
-        $db->select('JudgeInvitations');
+        $db->select('JudgeInvitations', 
+		'JudgeInvitations.id,JudgeInvitations.Email,JudgeInvitations.FirstName,JudgeInvitations.LastName,JudgeInvitations.Sent,JudgeInvitations.Replied,JudgeInvitations.Response', 
+		"term on JudgeInvitations.termInitiated = term.termInitiated", 
+		"term.ShowTerm = 'yes'");
         $res = $db->getResult();
         if (array_key_exists('id', $res)) $res=array($res);
         return array('total'=>count($res), 'data'=>$res);
     }
+
+	public function initiateTerm($term)
+	{
+		$db = new Database();
+		if($db->update('judgeInvitations',array(
+            'ShowTerm' => ($term == '' || $term == null ? 'NA' : 'yes')
+        ), "termInitiated = '".$term."'"))
+		{
+			return $db->update('judgeInvitations',array(
+            'ShowTerm' => ($term == '' || $term == null ? 'NA' : 'no')
+        ), "termInitiated != '".$term."'");
+		}
+		else 
+			return false;
+	}
 
     public function getById($id) {
         $db = new Database();

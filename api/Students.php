@@ -41,10 +41,12 @@ class Students {
 
     public function getAll(){
         $db = new Database();
-        $db->sql('select s.id,u.Email,u.FirstName,u.LastName,s.Project,s.Location,s.Grade
+		global $term;
+        $db->sql("select s.id,u.Email,u.FirstName,u.LastName,s.Project,s.Location, s.Grade
                 from Users as u
-                inner join Students as s ON u.StudentId = s.id
-                order by u.FirstName, u.LastName');
+				inner join Students as s ON u.StudentId = s.id Inner join Term as t ON u.termInitiated = t.termInitiated
+				where t.ShowTerm = 'yes'
+                order by u.FirstName, u.LastName");
 
         $res = $db->getResult();
         if (array_key_exists('id', $res)) $res=array($res);

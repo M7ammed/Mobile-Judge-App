@@ -40,6 +40,7 @@ Ext.define('OnlineJudges.controller.Admin', {
             'Invitations',
             'InvitationEmails',
             // NEW declare store
+            'Settings',
             'AddJudgesList',
             'Livestats',
             'LivestatsGraph',
@@ -128,6 +129,9 @@ Ext.define('OnlineJudges.controller.Admin', {
             "settings #resetBtn": {
                 tap: 'onResetAppBtnTap'
             },
+			"settings selectfield": {
+			    change: 'onTermsFieldChange'
+			},
             "adminStudentView button[ui=forward]": {
                 tap: 'onStudentShowJudgesTap'
             },
@@ -295,7 +299,7 @@ Ext.define('OnlineJudges.controller.Admin', {
         declinedPjo.check();
     },
     onPastJOptionsOKTap: function(){
-        var pjo = this.getPastJudgesgetaddJudgeBtnOptions();
+        var pjo = this.getPastJudgesOptions();
         var main = this.getMain();
         var pendingtPjo = pjo.down('checkboxfield[name=pendingJudges]');
         var acceptedPjo = pjo.down('checkboxfield[name=acceptedJudges]');
@@ -309,7 +313,7 @@ Ext.define('OnlineJudges.controller.Admin', {
         pjo.hide();
         
     },
-    //Funtion used in the TermsList view
+    //Function used in the TermsList view
     //==============================================================================================
     onTermsOKTab: function(btn){
         var main = this.getMain();
@@ -848,8 +852,6 @@ Ext.define('OnlineJudges.controller.Admin', {
         var main = this.getMain(),
             email = main.down("email");
         email.previous();
-
-
     },
 
     //===========================================================================
@@ -896,6 +898,22 @@ Ext.define('OnlineJudges.controller.Admin', {
         console.log(main);
     },
 
+    // Work in Progress
+    onTermsFieldChange: function (select, newValue, oldValue, eOpts) {
+
+        Ext.php.Settings.getTerm(function (data) {
+            console.log(data['termInitiated'])
+
+            if (oldValue === data['termInitiated']) {
+                Ext.php.Settings.initiateTerm(newValue, function (nextData) {
+                    console.log(nextData)
+                    console.log(newValue)
+                    console.log(oldValue)
+                });
+            }
+        });
+    },
+	
     onResetAppBtnTap: function () {
         var mainView = this.getMain();
 
@@ -990,6 +1008,9 @@ Ext.define('OnlineJudges.controller.Admin', {
             GradeSaveBtn = this.getGradeSaveBtn();
             GradeSaveBtn.hide();
 
+            store = Ext.getStore('Students');
+            store.load();
+
         }
         else if (title === 'Judges') {
             navBtn.from = "judgesTab";
@@ -1002,6 +1023,9 @@ Ext.define('OnlineJudges.controller.Admin', {
 
             GradeSaveBtn = this.getGradeSaveBtn();
             GradeSaveBtn.hide();
+
+            store = Ext.getStore('Judges');
+            store.load();
         }
         //invitations tab
         else if (title === 'Invitations') {
@@ -1111,10 +1135,11 @@ Ext.define('OnlineJudges.controller.Admin', {
                     if (!result.success) Ext.Msg.alert('Add Question', result.msg, Ext.emptyFn);
                     else {
                         var store = Ext.getStore('Questions');
-                        store.load();
-
+                        
+						me.onHomeBack();
                         mainView.pop();
-                        me.onHomeBack();
+						// Fixed Bug 5, put the store.load() underneath, after the main menu has been popped
+						store.load();
                     }
                 });
             }
@@ -1145,8 +1170,6 @@ Ext.define('OnlineJudges.controller.Admin', {
                     xtype: 'adminSendInvitation',
                     title: 'Send Invitation'
                 });
-
-                console.log("herro")
 
                 button.setText("Send");
                 button.setIconCls('');
@@ -1417,8 +1440,9 @@ Ext.define('OnlineJudges.controller.Admin', {
     },
 
     onPeopleTabHide: function(tabpanel){
-            AddJudgeBtn = this.getaddJudgeBtn();
-            AddJudgeBtn.hide();
+			// Commented out due to Bug 
+            // AddJudgeBtn = this.getaddJudgeBtn();
+            // AddJudgeBtn.hide();
             
             GradeSaveBtn = this.getGradeSaveBtn();
             GradeSaveBtn.hide();
@@ -1521,12 +1545,13 @@ Ext.define('OnlineJudges.controller.Admin', {
         var navBtn = this.getNavBtn(),
             navBar = this.getMain().getNavigationBar();
 
-        if (navBtn.from !== 'studentJudges' && navBtn.from !== 'studentGrade') this.getLogoutBtn().show();
+        if (navBtn.from !== 'studentJudges' && navBtn.from !== 'studentGrade' && navBtn.from !== 'newQuestion') this.getLogoutBtn().show();
 
         if (navBtn.from === 'newQuestion') {
             navBtn.from = 'questionsView';
             navBtn.setText("");
             navBtn.setIconCls('add');
+			navBtn.show();
         }
 
         else if (navBtn.from === 'sendInvitation') {
@@ -1624,7 +1649,7 @@ Ext.define('OnlineJudges.controller.Admin', {
 
         var store = Ext.getStore('Livestats');
         store.setSorters('id');
-
+        
         mainView.push({
             xtype: 'livestatsGraph'
         });
@@ -1635,11 +1660,10 @@ Ext.define('OnlineJudges.controller.Admin', {
             LivestatsBtn = this.getLivestatsBtn(),
             mainView = this.getMain(),
             navBar = mainView.getNavigationBar(),
-            form = mainView.down('livestats');
-            //store = Ext.getStore('Livestats');
-            //store.load();
+            form = mainView.down('livestats'),
+            store = Ext.getStore('Livestats');
+        store.load();
 
-        var store = Ext.getStore('Livestats');
         var method = Ext.direct.Manager.parseMethod('Ext.php.Livestats.getAll');
         store.getProxy().setDirectFn(method);
     store.setSorters('id');

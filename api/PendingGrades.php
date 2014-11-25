@@ -7,11 +7,12 @@ class PendingGrades {
 
     public function getAll() {
         $db = new Database();
-        $db->sql('SELECT j.JudgeId, SUBSTRING(s.FirstName,1,1) as JFName, s.LastName as JLName, j.StudentId, SUBSTRING(e.FirstName,1,1) as SFName, e.LastName as SLName, j.Grade, j.Accepted 
+        $db->sql("SELECT j.JudgeId, SUBSTRING(s.FirstName,1,1) as JFName, s.LastName as JLName, j.StudentId, SUBSTRING(e.FirstName,1,1) as SFName, e.LastName as SLName, j.Grade, j.Accepted 
                     FROM JudgeStudentGrade as j
                     inner join Users as s on s.JudgeId = j.JudgeId
                     inner join Users as e on e.StudentId = j.StudentId
-                    WHERE Grade is Not Null');
+					join term as t on t.termInitiated = s.termInitiated
+                    WHERE Grade is Not Null and t.ShowTerm = 'yes'");
         $res = $db->getResult();
         //if (array_key_exists('JudgeId', $res)) $res=array($res);
         return array('total'=>count($res), 'data'=>$res);

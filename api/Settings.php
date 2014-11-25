@@ -6,11 +6,32 @@ class Settings {
 
     public function load() {
         $db = new Database();
-        $db->select('Settings');
+        $db->select('Settings', "*", "term on Settings.Term = term.termInitiated", "term.ShowTerm = 'yes'");
         $res = $db->getResult();
         if (array_key_exists('AllowJudgesToLogin', $res)) $res['AllowJudgesToLogin'] = $res['AllowJudgesToLogin'] == '1';
         return $res;
     }
+	public function getTerm()
+	{
+		$db = new Database();
+		$db->select('term',"term.termInitiated",null,"term.ShowTerm = 'yes'");
+		$res = $db->getResult();
+		return $res;
+	}
+	public function initiateTerm($term)
+	{
+		$db = new Database();
+		if($db->update('term',array(
+            'ShowTerm' => ($term == '' || $term == null ? 'NA' : 'yes')
+        ), "termInitiated = '".$term."'"))
+		{
+			return $db->update('term',array(
+            'ShowTerm' => ($term == '' || $term == null ? 'NA' : 'no')
+        ), "termInitiated != '".$term."'");
+		}
+		else 
+			return false;
+	}
 
     public function getSummary() {
         $db = new Database();

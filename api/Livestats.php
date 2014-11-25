@@ -7,7 +7,7 @@ class Livestats {
     //Get all: average grades, student id, First Name and last name
     public function getAll() {
         $db = new Database();
-        $db->sql('select s.id, avg(j.grade) as RawGrade, k.ApprovedGrade, u.FirstName as Name, u.LastName, s.project, s.location
+        $db->sql("select s.id, avg(j.grade) as RawGrade, k.ApprovedGrade, u.FirstName as Name, u.LastName, s.project, s.location
             FROM JudgeStudentGrade as j 
             join Users as u on j.StudentId = u.StudentId
             join Students as s on s.id = j.StudentId
@@ -20,7 +20,9 @@ class Livestats {
                 where ju.Accepted = 1
                 group by ju.StudentId       
             ) as k on k.id = s.id
-            group by j.StudentId');
+			join term as t on u.termInitiated = t.termInitiated
+			where t.ShowTerm = 'yes'
+            group by j.StudentId");
 
         $res = $db->getResult();
         if (array_key_exists('id', $res)) $res=array($res);

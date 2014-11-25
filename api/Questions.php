@@ -5,7 +5,7 @@ require_once 'Database.php';
 class Questions {
     public function getAll() {
         $db = new Database();
-        $db->select('Questions');
+        $db->select('Questions',"*","term ON Questions.termInitiated = term.termInitiated" , "term.ShowTerm = 'yes'");
         $res = $db->getResult();
         if (array_key_exists('id', $res)) $res=array($res);
         return array('total'=>count($res), 'data'=>$res);

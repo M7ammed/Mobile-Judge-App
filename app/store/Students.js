@@ -21,7 +21,7 @@ Ext.define('OnlineJudges.store.Students', {
             {
                 name: 'id',
                 type: 'int'
-            }, 'Email', 'FirstName', 'LastName', 'Project', 'Location',
+            }, 'Email', 'FirstName', 'LastName', 'Project', 'Location', 'termInitiated',
             {
                 name: 'Grade',
                 type: 'int'
@@ -36,7 +36,7 @@ Ext.define('OnlineJudges.store.Students', {
             }
         ],
         sorters: ['FirstName','LastName'],
-        grouper: function(record) {
+        grouper: function (record) {
             return record.get('FirstName')[0].toUpperCase();
         }
     }

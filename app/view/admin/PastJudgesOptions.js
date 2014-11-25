@@ -40,6 +40,20 @@ Ext.define('OnlineJudges.view.admin.PastJudgesOptions', {
                                    label: 'Declined',
                                    labelWrap: true,
                                    labelWidth: '60%'
+                               },
+							   {
+                                   xtype: 'checkboxfield',
+                                   name: 'attendedJudges',
+                                   label: 'Attended',
+                                   labelWrap: true,
+                                   labelWidth: '60%'
+                               },
+							   {
+                                   xtype: 'checkboxfield',
+                                   name: 'gradedJudges',
+                                   label: 'Graded',
+                                   labelWrap: true,
+                                   labelWidth: '60%'
                                }
                          ]
                      }, {

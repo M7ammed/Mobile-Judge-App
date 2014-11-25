@@ -12,8 +12,8 @@ class Database{
      * Database class
      */
     private $db_host = "localhost";     // Change as required
-    private $db_user = "judge";         // Change as required
-    private $db_pass = "Judge2013";     // Change as required
+    private $db_user = "root";         // Change as required
+    private $db_pass = "Bahamut49";     // Change as required
     private $db_name = "onlinejudges";	// Change as required
 
     /*
@@ -22,8 +22,21 @@ class Database{
     private $con = false; // Check to see if the connection is active
     private $result = array(); // Any results from a query will be stored hereX
 
+	public function testConnect($term){
+		$this->db_name = $term;
+		$this->disconnect();
+		$this->connect();
+		return true;
+	}
+
+	public function dbName(){
+		return $this->db_name;
+	}
+
     // Function to make connection to database
     public function connect(){
+
+	
         if(!$this->con){
             $myconn = @mysql_connect($this->db_host,$this->db_user,$this->db_pass);  // mysql_connect() with variables defined at the start of Database class
             if($myconn){
@@ -69,7 +82,6 @@ class Database{
         $query = @mysql_query($sql);
         if($query){
             // If the query returns >= 1 assign the number of rows to numResults
-            if ($query === true) return true;
             $this->numResults = mysql_num_rows($query);
             // Loop through the query results by the number of rows returned
             for($i = 0; $i < $this->numResults; $i++){
